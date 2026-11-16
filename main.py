@@ -1,4 +1,20 @@
 from zoneinfo import ZoneInfo
+
+# --- SOWETO PULSE NEWS CALENDAR ---
+NEWS_EVENTS = {
+    "2026-11-18": "⚠️ FOMC MINUTES TODAY (00:00 UZT / 02:00 SA) - HIGH IMPACT - Hawkish = Gold DOWN, Dovish = Gold UP. Do NOT trade big 30min before/after.",
+    "2026-11-26": "⚠️ US BANK HOLIDAY - MEDIUM IMPACT - Low volume, sideways + fake spikes. Use smaller size.",
+    "2026-12-02": "⚠️ NFP WEEK - Jobs data coming. Expect high volatility on Gold.",
+    "2026-12-10": "⚠️ CPI - US Inflation data. Higher = Gold DOWN, Lower = Gold UP.",
+}
+
+def get_news_warning():
+    try:
+        today = datetime.datetime.now(SA).strftime("%Y-%m-%d")
+        return NEWS_EVENTS.get(today, "")
+    except:
+        return ""
+
 SA = ZoneInfo("Africa/Johannesburg")
 import os, requests, asyncio, datetime
 from telegram import Update
