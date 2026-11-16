@@ -63,6 +63,7 @@ def build_signal(symbol, name):
     if not closes or len(closes)<25:
         return f"⏳ Scanning {name}... try again"
     price=closes[-1]; e9=ema(closes,9); e21=ema(closes,21); r=rsi(closes)
+    warn=get_news_warning()
     now=datetime.datetime.now(SA).strftime("%H:%M %d %b SA Time")
     if price>e9 and price>e21:
         side="BUY"; conf="HIGH" if 45<r<65 else "MEDIUM"
@@ -130,8 +131,23 @@ async def market(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for k in PAIRS:
         sym,name=PAIRS[k]
         await update.message.reply_text(build_signal(sym,name))
-async def news(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("📰 TODAY'S NEWS - V5+\n\n• London 10:00 SAST\n• NY Open 15:30 SAST - RED news risk\n• USD news moves GOLD + EURUSD + GBPUSD + USTech fast\n• Don't trade 5 min before/after RED news")
+async def news(update, context):
+    msg = "📰 *SOWETO PULSE - NEWS THIS WEEK*
+
+"
+    for d, ev in NEWS_EVENTS.items():
+        msg += f"{d}: {ev}
+
+"
+    warn = get_news_warning()
+    if warn:
+        msg += f"
+🚨 *TODAY:* {warn}"
+    else:
+        msg += "
+✅ No high-impact news today. Normal trading."
+    await update.message.reply_text(msg, parse_mode="Markdown")
+
 async def alerts(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("✅ ALERTS ARE ON!\n• 09:00 Briefing\n• 10:00-19:00 Auto Signals\n• 15:30 NY Open")
 async def session(update: Update, context: ContextTypes.DEFAULT_TYPE):
