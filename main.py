@@ -1,13 +1,13 @@
 from zoneinfo import ZoneInfo
+SA = ZoneInfo("Africa/Johannesburg")
 
-# --- SOWETO PULSE NEWS CALENDAR ---
+# --- NEWS CALENDAR ---
 NEWS_EVENTS = {
-    "2026-11-18": "⚠️ FOMC MINUTES TODAY (00:00 UZT / 02:00 SA) - HIGH IMPACT - Hawkish = Gold DOWN, Dovish = Gold UP. Do NOT trade big 30min before/after.",
-    "2026-11-26": "⚠️ US BANK HOLIDAY - MEDIUM IMPACT - Low volume, sideways + fake spikes. Use smaller size.",
-    "2026-12-02": "⚠️ NFP WEEK - Jobs data coming. Expect high volatility on Gold.",
-    "2026-12-10": "⚠️ CPI - US Inflation data. Higher = Gold DOWN, Lower = Gold UP.",
+    "2026-11-18": "FOMC MINUTES - HIGH IMPACT - Hawkish = Gold DOWN, Dovish = Gold UP.",
+    "2026-11-26": "US BANK HOLIDAY - Low volume, fake spikes. Use smaller size.",
+    "2026-12-02": "NFP WEEK - Jobs data. High volatility on Gold.",
+    "2026-12-10": "CPI - Inflation. Higher = Gold DOWN, Lower = Gold UP.",
 }
-
 def get_news_warning():
     try:
         today = datetime.datetime.now(SA).strftime("%Y-%m-%d")
@@ -15,7 +15,6 @@ def get_news_warning():
     except:
         return ""
 
-SA = ZoneInfo("Africa/Johannesburg")
 import os, requests, asyncio, datetime
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -63,7 +62,6 @@ def build_signal(symbol, name):
     if not closes or len(closes)<25:
         return f"⏳ Scanning {name}... try again"
     price=closes[-1]; e9=ema(closes,9); e21=ema(closes,21); r=rsi(closes)
-    warn=get_news_warning()
     now=datetime.datetime.now(SA).strftime("%H:%M %d %b SA Time")
     if price>e9 and price>e21:
         side="BUY"; conf="HIGH" if 45<r<65 else "MEDIUM"
@@ -132,20 +130,14 @@ async def market(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sym,name=PAIRS[k]
         await update.message.reply_text(build_signal(sym,name))
 async def news(update, context):
-    msg = "📰 *SOWETO PULSE - NEWS THIS WEEK*
-
-"
+    msg = "📰 SOWETO PULSE - NEWS THIS WEEK\n\n"
     for d, ev in NEWS_EVENTS.items():
-        msg += f"{d}: {ev}
-
-"
+        msg += f"{d}: {ev}\n\n"
     warn = get_news_warning()
     if warn:
-        msg += f"
-🚨 *TODAY:* {warn}"
+        msg += f"\n🚨 TODAY: {warn}"
     else:
-        msg += "
-✅ No high-impact news today. Normal trading."
+        msg += "\n✅ No high-impact news today. Normal trading."
     await update.message.reply_text(msg, parse_mode="Markdown")
 
 async def alerts(update: Update, context: ContextTypes.DEFAULT_TYPE):
