@@ -47,7 +47,7 @@ def build_signal(symbol, name):
     if not closes or len(closes)<25:
         return f"⏳ Scanning {name}... try again"
     price=closes[-1]; e9=ema(closes,9); e21=ema(closes,21); r=rsi(closes)
-    now=datetime.datetime.now().strftime("%H:%M %d %b SA Time")
+    now=datetime.datetime.now(SA).strftime("%H:%M %d %b SA Time")
     if price>e9 and price>e21:
         side="BUY"; conf="HIGH" if 45<r<65 else "MEDIUM"
     elif price<e9 and price<e21:
@@ -126,7 +126,7 @@ async def risk(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def morning_briefing(context: ContextTypes.DEFAULT_TYPE):
     try: chat_id=open(CHAT_FILE).read().strip()
     except: return
-    now=datetime.datetime.now().strftime("%d %b %Y")
+    now=datetime.datetime.now(SA).strftime("%d %b %Y")
     msg=f"☀️ GOOD MORNING SOWETO - {now}\n\n📍 SOWETO PULSE V5+ BRIEFING\n\n"
     for k in PAIRS:
         sym,name=PAIRS[k]
