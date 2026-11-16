@@ -1,3 +1,5 @@
+from zoneinfo import ZoneInfo
+SA = ZoneInfo("Africa/Johannesburg")
 import os, requests, asyncio, datetime
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -147,10 +149,10 @@ app=ApplicationBuilder().token(TOKEN).build()
 for cmd,fn in [("start",start),("pulse",pulse),("gold",gold),("us30",us30),("nas100",nas100),("ustech",ustech),("eurusd",eurusd),("gbpusd",gbpusd),("market",market),("news",news),("alerts",alerts),("session",session),("risk",risk)]:
     app.add_handler(CommandHandler(cmd,fn))
 jq=app.job_queue
-jq.run_daily(morning_briefing, time=datetime.time(hour=9, minute=0), days=(0,1,2,3,4))
-jq.run_daily(ny_alert, time=datetime.time(hour=15, minute=30), days=(0,1,2,3,4))
+jq.run_daily(morning_briefing, time=datetime.time(hour=9, tzinfo=SA, minute=0), days=(0,1,2,3,4))
+jq.run_daily(ny_alert, time=datetime.time(hour=15, tzinfo=SA, minute=30), days=(0,1,2,3,4))
 for h in [10,11,12,13,14,16,17,18,19]:
-    jq.run_daily(auto_signal, time=datetime.time(hour=h, minute=0), days=(0,1,2,3,4))
+    jq.run_daily(auto_signal, time=datetime.time(hour=h, tzinfo=SA, minute=0), days=(0,1,2,3,4))
 print("Bot running V5+")
 asyncio.set_event_loop(asyncio.new_event_loop())
 app.run_polling()
